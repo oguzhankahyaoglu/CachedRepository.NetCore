@@ -1,62 +1,86 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
+using System.Text;
+using Microsoft.Extensions.DependencyInjection;
 
-namespace CachedRepository
+namespace CachedRepository.NetCore
 {
-    internal static class Extensions
+    public static class Extensions
     {
-        /// <summary>
-        /// Verilen tarihi, verilen timespan ile verilen en yakın tarihe yuvarlar, örneğin  her 10 dk'da bir gibi.
-        /// var roundedUp = date.RoundUp(TimeSpan.FromMinutes(15)); // 2010/02/05 10:45:00
-        /// </summary>
-        public static DateTime RoundUp(this DateTime dt, TimeSpan d)
+        public static IServiceCollection AddAllCachedRepositoriesAsServices(this IServiceCollection services, Assembly repoContainerAssembly, 
+            ServiceLifetime lifetime = ServiceLifetime.Scoped)
         {
-            var modTicks = dt.Ticks % d.Ticks;
-            var delta = modTicks != 0 ? d.Ticks - modTicks : 0;
-            return new DateTime(dt.Ticks + delta, dt.Kind);
+            services.AddLazyCache();
+            var assembly = repoContainerAssembly;
+
+            //Register all CachedRepos
+            assembly.GetTypesAssignableFrom(typeof(CachedRepo<>)).ForEach((t)=>
+            {
+                services.Add(new ServiceDescriptor(t,t, lifetime));
+            });
+
+            //Register all CachedDictionaries
+            assembly.GetTypesAssignableFrom(typeof(CachedDictionary<>)).ForEach((t)=>
+            {
+                services.Add(new ServiceDescriptor(t,t, lifetime));
+            });
+
+            //Register all CachedDictionaries
+            assembly.GetTypesAssignableFrom(typeof(CachedObject<>)).ForEach((t)=>
+            {
+                services.Add(new ServiceDescriptor(t,t, lifetime));
+            });
+            return services;
         }
 
-        public static bool AnyAndNotNull<T>(this IEnumerable<T> enumerable)
+        private static List<Type> GetTypesAssignableFrom<T>(this Assembly assembly)
         {
-            return enumerable != null && enumerable.Any();
-        }
-        /// <summary>
-        /// gereksiz nullcheck'ten kurtarmak için. defaultValue parametresi verilirse, o zaman null yada 0 elemanlı olması durumunda bu değer dönecektir
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="coll"></param>
-        /// <returns></returns>
-        public static IEnumerable<T> DefaultIfNull<T>(this IEnumerable<T> coll, IEnumerable<T> defaultValue = null)
-        {
-            if (coll.AnyAndNotNull())
-                return coll;
-            if (defaultValue.AnyAndNotNull())
-                return defaultValue;
-            return Enumerable.Empty<T>();
+            return assembly.GetTypesAssignableFrom(typeof(T));
         }
 
-        /// <summary>
-        /// gereksiz nullcheck'ten kurtarmak için. defaultValue parametresi verilirse, o zaman null yada 0 elemanlı olması durumunda bu değer dönecektir
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="coll"></param>
-        /// <returns></returns>
-        public static List<T> DefaultIfNullToList<T>(this IEnumerable<T> coll, IEnumerable<T> defaultValue = null)
+        private static List<Type> GetTypesAssignableFrom(this Assembly assembly, Type compareType)
         {
-            return DefaultIfNull(coll, defaultValue).ToList();
+            List<Type> ret = new List<Type>();
+            var types = assembly.DefinedTypes.ToArray();
+            for (var i = 0; i<types.Length;i++)
+            {
+                var type = types[i];
+                if (compareType == type) 
+                    continue;
+                if (compareType.IsAssignableFrom(type) || IsAssignableToGenericType(compareType, type))
+                {
+                    ret.Add(type);
+                }
+            }
+            return ret;
         }
 
-        /// <summary>
-        /// gereksiz nullcheck'ten kurtarmak için. defaultValue parametresi verilirse, o zaman null yada 0 elemanlı olması durumunda bu değer dönecektir
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="coll"></param>
-        /// <returns></returns>
-        public static T[] DefaultIfNullToArray<T>(this IEnumerable<T> coll, IEnumerable<T> defaultValue = null)
+        private static bool IsAssignableToGenericType(Type givenType, Type genericType)
         {
-            return DefaultIfNull(coll, defaultValue).ToArray();
+            var interfaceTypes = givenType.GetInterfaces();
+
+            foreach (var it in interfaceTypes)
+            {
+                if (it.IsGenericType && it.GetGenericTypeDefinition() == genericType)
+                    return true;
+            }
+
+            if (givenType.IsGenericType)
+            {
+                if (givenType.GetGenericTypeDefinition() == genericType)
+                    return true;
+                if (genericType?.BaseType != null && genericType.BaseType.IsGenericType && genericType.BaseType?.GetGenericTypeDefinition() == givenType)
+                    return true;
+            }
+
+            Type baseType = givenType.BaseType;
+            if (baseType == null) return false;
+
+            return IsAssignableToGenericType(baseType, genericType);
         }
+
 
     }
 }

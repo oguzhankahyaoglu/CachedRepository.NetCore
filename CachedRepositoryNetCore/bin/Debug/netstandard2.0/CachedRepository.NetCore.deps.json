@@ -1,15 +1,16 @@
 {
   "runtimeTarget": {
     "name": ".NETStandard,Version=v2.0/",
-    "signature": "05d9fc1878432cd3cf29ed2b3182823b3fd52cc6"
+    "signature": "14f86662198570659f62ec760081ed7ae60bd51a"
   },
   "compilationOptions": {},
   "targets": {
     ".NETStandard,Version=v2.0": {},
     ".NETStandard,Version=v2.0/": {
-      "CachedRepository.NetCore/1.0.0-pre": {
+      "CachedRepository.NetCore/1.0.2-pre": {
         "dependencies": {
           "LazyCache": "2.0.0-beta03",
+          "LazyCache.AspNetCore": "2.0.0-beta03",
           "NETStandard.Library": "2.0.3"
         },
         "runtime": {
@@ -23,6 +24,20 @@
         },
         "runtime": {
           "lib/netstandard2.0/LazyCache.dll": {
+            "assemblyVersion": "2.0.0.89",
+            "fileVersion": "2.0.0.89"
+          }
+        }
+      },
+      "LazyCache.AspNetCore/2.0.0-beta03": {
+        "dependencies": {
+          "LazyCache": "2.0.0-beta03",
+          "Microsoft.Extensions.Caching.Abstractions": "2.0.0",
+          "Microsoft.Extensions.Caching.Memory": "2.0.0",
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "2.0.0"
+        },
+        "runtime": {
+          "lib/netstandard2.0/LazyCache.AspNetCore.dll": {
             "assemblyVersion": "2.0.0.89",
             "fileVersion": "2.0.0.89"
           }
@@ -100,7 +115,7 @@
     }
   },
   "libraries": {
-    "CachedRepository.NetCore/1.0.0-pre": {
+    "CachedRepository.NetCore/1.0.2-pre": {
       "type": "project",
       "serviceable": false,
       "sha512": ""
@@ -111,6 +126,13 @@
       "sha512": "sha512-PAGKZNQqDgLqIrLo2aYOjwqU9KLYgWt8UDtcHedMbOSHGVTs7JsFYKm3VRmktMQh/lV5L8xxGmDxBcT7iMJIIw==",
       "path": "lazycache/2.0.0-beta03",
       "hashPath": "lazycache.2.0.0-beta03.nupkg.sha512"
+    },
+    "LazyCache.AspNetCore/2.0.0-beta03": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-c7WxStD8puXlwaAZxgKOTjnj0H+AZnAlm6SgNn/wqvC3BDbBjycLsh5/RbmKvvsZ5aGaGN8EbFJeoxYBMLCYYQ==",
+      "path": "lazycache.aspnetcore/2.0.0-beta03",
+      "hashPath": "lazycache.aspnetcore.2.0.0-beta03.nupkg.sha512"
     },
     "Microsoft.Extensions.Caching.Abstractions/2.0.0": {
       "type": "package",

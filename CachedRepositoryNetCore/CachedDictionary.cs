@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using LazyCache;
 
-namespace CachedRepository
+namespace CachedRepository.NetCore
 {
     #region Overloads of CachedDictionary
 

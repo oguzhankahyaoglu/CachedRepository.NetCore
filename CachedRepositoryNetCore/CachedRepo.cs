@@ -4,7 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using LazyCache;
 
-namespace CachedRepository
+namespace CachedRepository.NetCore
 {
     /// <summary>
     /// Runtime Cache'de kaydedilmek üzere, cached repo yazmak için kullanılabilr.

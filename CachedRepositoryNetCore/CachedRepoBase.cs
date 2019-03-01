@@ -4,7 +4,7 @@ using System.Threading;
 using LazyCache;
 using Microsoft.Extensions.Caching.Memory;
 
-namespace CachedRepository
+namespace CachedRepository.NetCore
 {
     public abstract class CachedRepoBase
     {
