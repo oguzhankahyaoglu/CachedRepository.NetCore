@@ -7,7 +7,7 @@
   "targets": {
     ".NETStandard,Version=v2.0": {},
     ".NETStandard,Version=v2.0/": {
-      "CachedRepository.NetCore/2.0.0-pre": {
+      "CachedRepository.NetCore/2.0.1-pre": {
         "dependencies": {
           "LazyCache": "2.0.0-beta03",
           "LazyCache.AspNetCore": "2.0.0-beta03",
@@ -115,7 +115,7 @@
     }
   },
   "libraries": {
-    "CachedRepository.NetCore/2.0.0-pre": {
+    "CachedRepository.NetCore/2.0.1-pre": {
       "type": "project",
       "serviceable": false,
       "sha512": ""
