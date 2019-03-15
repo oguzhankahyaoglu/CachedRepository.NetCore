@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Threading.Tasks;
 using LazyCache;
 
@@ -13,50 +11,40 @@ namespace CachedRepository.NetCore
     /// </summary>
     /// <typeparam name="T">Repository'nin içerdiği entity tipi</typeparam>
     //public abstract class CachedRepo<T, TKey, TGetResult> : CachedRepoBase<List<T>>
-    [Obsolete("Bir sonraki versiyonda senkron çalışan bütün repo base'leri kaldırılacaktır. Async yapıya geçmeniz gerekmektedir.")]
-    public abstract class CachedRepo<T> : CachedRepoBase<List<T>>
+    public abstract class CachedRepoAsync<T> : CachedRepoBase<T[]>
         where T : class
         //where TGetResult : class
     {
-        protected CachedRepo(IAppCache lazyCache) : base(lazyCache)
+        protected CachedRepoAsync(IAppCache lazyCache) : base(lazyCache)
         {
 
         }
 
-
-        #region Get Cached Entities (private)
-
-        private List<T> CachedEntities
-        {
-            get => GetFromCache(GetCacheKey());
-            set => SetCache(GetCacheKey(), value);
-        }
-
-        #endregion
 
         /// <summary>
         /// Cache'deki btün entityleri verir
         /// </summary>
         /// <returns></returns>
         [DebuggerStepThrough]
-        public virtual List<T> GetCachedEntities(bool dontFetchData = false)
+        public virtual Task<T[]> GetAsync(bool dontFetchData = false)
         {
             //Bu _ ve Clone metodları LOCK'tan kurtarmak için eklendi. Datayı aldıktan sonra ,CLONE ederken LOCK'dan ötürü beklemeye gerek yok!
             return _GetCachedEntities(dontFetchData);
         }
 
-        private List<T> _GetCachedEntities(bool dontFetchData)
+        private async Task<T[]> _GetCachedEntities(bool dontFetchData)
         {
+            var cachedEntities = await GetFromCacheAsync(GetCacheKey());
             if (dontFetchData)
-                return CachedEntities;
+                return cachedEntities;
 
-            if (CachedEntities?.Count > 0)
-                return CachedEntities;
+            if (cachedEntities?.Length > 0)
+                return cachedEntities;
 
-            List<T> returnedData;
+            T[] returnedData;
             try
             {
-                returnedData = GetDataToBeCached()?.ToList();
+                returnedData = await GetDataToBeCached();
                 LastCachedItemDate = DateTime.Now;
             }
             catch (Exception e)
@@ -64,21 +52,20 @@ namespace CachedRepository.NetCore
                 throw new Exception($"{GetType().Name} repo'sundan data çekilirken hata oluştu", e);
             }
 
-            if (returnedData == null || returnedData.Count == 0)
-                return CachedEntities;
+            if (returnedData == null || returnedData.Length == 0)
+                return cachedEntities;
 
-            CachedEntities = returnedData;
+            SetCache(GetCacheKey(), returnedData);
             return returnedData;
         }
-
 
         /// <summary>
         /// Cache'deki değerleri verilen parametre ile değiştirir
         /// </summary>
         /// <param name="value"></param>
-        public virtual void SetCachedEntities(List<T> value)
+        public virtual void Set(T[] value)
         {
-            CachedEntities = value;
+            SetCache(GetCacheKey(), value);
         }
 
         /// <summary>
@@ -86,11 +73,15 @@ namespace CachedRepository.NetCore
         /// </summary>
         public override void ReleaseCache()
         {
-            CachedEntities = null;
+            SetCache(GetCacheKey(), null);
         }
 
-        public int GetCachedCount() => CachedEntities?.Count ?? 0;
+        public async Task<int> GetCachedCount()
+        {
+            var cachedEntities = await GetFromCacheAsync(GetCacheKey());
+            return cachedEntities?.Length ?? 0;
+        }
 
-        protected abstract IEnumerable<T> GetDataToBeCached();
+        protected abstract Task<T[]> GetDataToBeCached();
     }
 }

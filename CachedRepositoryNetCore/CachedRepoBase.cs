@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Threading;
+using System.Threading.Tasks;
 using LazyCache;
 using Microsoft.Extensions.Caching.Memory;
 
@@ -24,25 +25,6 @@ namespace CachedRepository.NetCore
         public static Func<DateTime> DefaultExpireDate1Hour = () => DateTime.Now.RoundUp(TimeSpan.FromHours(1));
 
         public static Func<int, DateTime> DefaultExpireDateXHours = (hours) => DateTime.Now.AddHours(hours).RoundUp(TimeSpan.FromHours(1));
-
-        ///// <summary>
-        ///// Sadece Memorycache'i boşaltır, Runtimecache'i elle temizlemek gerekiyor.
-        ///// </summary>
-        //public static void ReleaseAllCaches()
-        //{
-        //    locker.Wait();
-        //    try
-        //    {
-        //        //HttpContext.Current.Cache.ClearAll();
-        //        var cacheKeys = _LazyCache.CacheProvider..ObjectCache.Select(kvp => kvp.Key).ToList();
-        //        foreach (string cacheKey in cacheKeys)
-        //            _LazyCache.ObjectCache.Remove(cacheKey);
-        //    }
-        //    finally
-        //    {
-        //        locker.Release();
-        //    }
-        //}
 
         protected CachedRepoBase(IAppCache lazyCache)
         {
@@ -76,31 +58,6 @@ namespace CachedRepository.NetCore
             return expiration;
         }
 
-        //protected T Clone<T>(T source)
-        //{
-        //    //PERFORMANS DAHA ÖNEMLİ; CACHE'DEN DÖNEN DEĞERLERİ MANİPÜLE ETMEMELİ KİMSE...
-        //    return source;
-        //    //if (source == null)
-        //    //    return source;
-
-        //    //T result;
-        //    //if (!Debugger.IsAttached)
-        //    //{
-        //    //    result = source.DeepClone();
-        //    //    return result;
-        //    //}
-
-        //    //var sw = new Stopwatch();
-        //    //sw.Start();
-        //    //result = source.DeepClone();
-        //    //sw.Stop();
-        //    ////IGNORE 
-        //    ////if (sw.ElapsedMilliseconds < 10)
-        //    ////    return result;
-        //    //DebugLog($"CLONING took {sw.Elapsed} with result of {result}");
-        //    //return result;
-        //}
-
         protected void DebugLog(string msg)
         {
             Debug.WriteLine($"[CACHEDREPO-{GetType().Name}] {msg}");
@@ -122,22 +79,11 @@ namespace CachedRepository.NetCore
             return "CachedRepoBase-" + GetType().FullName;
         }
 
-        protected T GetFromCache(String key)
+        protected async Task<T> GetFromCacheAsync(String key)
         {
-            var cachedItem = _LazyCache.Get<T>(key);
+            var cachedItem = await _LazyCache.GetAsync<T>(key);
             return cachedItem;
         }
-
-        ///// <summary>
-        ///// Cache'in dependent olması gereken bir mekanizma olursa, bu metod ezilerek ilgili dependency verilebilir.
-        ///// Default olarak null döner dependency olarak.
-        ///// </summary>
-        ///// <returns></returns>
-        //protected virtual CacheDependency GetCacheDependency()
-        //{
-        //    //var cacheDependency = new CacheDependency(null, new[] { GLOBAL_CACHE_KEY });
-        //    return null;
-        //}
 
         /// <summary>
         /// Runtime Cache'e yazmakla görevlidir. Default davranışı 15 gün cache'de kalacak ve NotRemovable olacak şekilde cache'lemektir.

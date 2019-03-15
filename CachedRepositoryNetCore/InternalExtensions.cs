@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace CachedRepository.NetCore
 {
@@ -16,47 +14,5 @@ namespace CachedRepository.NetCore
             var delta = modTicks != 0 ? d.Ticks - modTicks : 0;
             return new DateTime(dt.Ticks + delta, dt.Kind);
         }
-
-        public static bool AnyAndNotNull<T>(this IEnumerable<T> enumerable)
-        {
-            return enumerable != null && enumerable.Any();
-        }
-        /// <summary>
-        /// gereksiz nullcheck'ten kurtarmak için. defaultValue parametresi verilirse, o zaman null yada 0 elemanlı olması durumunda bu değer dönecektir
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="coll"></param>
-        /// <returns></returns>
-        public static IEnumerable<T> DefaultIfNull<T>(this IEnumerable<T> coll, IEnumerable<T> defaultValue = null)
-        {
-            if (coll.AnyAndNotNull())
-                return coll;
-            if (defaultValue.AnyAndNotNull())
-                return defaultValue;
-            return Enumerable.Empty<T>();
-        }
-
-        /// <summary>
-        /// gereksiz nullcheck'ten kurtarmak için. defaultValue parametresi verilirse, o zaman null yada 0 elemanlı olması durumunda bu değer dönecektir
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="coll"></param>
-        /// <returns></returns>
-        public static List<T> DefaultIfNullToList<T>(this IEnumerable<T> coll, IEnumerable<T> defaultValue = null)
-        {
-            return DefaultIfNull(coll, defaultValue).ToList();
-        }
-
-        /// <summary>
-        /// gereksiz nullcheck'ten kurtarmak için. defaultValue parametresi verilirse, o zaman null yada 0 elemanlı olması durumunda bu değer dönecektir
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="coll"></param>
-        /// <returns></returns>
-        public static T[] DefaultIfNullToArray<T>(this IEnumerable<T> coll, IEnumerable<T> defaultValue = null)
-        {
-            return DefaultIfNull(coll, defaultValue).ToArray();
-        }
-
     }
 }

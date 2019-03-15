@@ -16,19 +16,19 @@ namespace CachedRepository.NetCore
             var assembly = repoContainerAssembly;
 
             //Register all CachedRepos
-            assembly.GetTypesAssignableFrom(typeof(CachedRepo<>)).ForEach((t)=>
+            assembly.GetTypesAssignableFrom(typeof(CachedRepoAsync<>)).ForEach((t)=>
             {
                 services.Add(new ServiceDescriptor(t,t, lifetime));
             });
 
             //Register all CachedDictionaries
-            assembly.GetTypesAssignableFrom(typeof(CachedDictionary<>)).ForEach((t)=>
+            assembly.GetTypesAssignableFrom(typeof(CachedDictionaryAsync<>)).ForEach((t)=>
             {
                 services.Add(new ServiceDescriptor(t,t, lifetime));
             });
 
             //Register all CachedDictionaries
-            assembly.GetTypesAssignableFrom(typeof(CachedObject<>)).ForEach((t)=>
+            assembly.GetTypesAssignableFrom(typeof(CachedObjectAsync<>)).ForEach((t)=>
             {
                 services.Add(new ServiceDescriptor(t,t, lifetime));
             });
