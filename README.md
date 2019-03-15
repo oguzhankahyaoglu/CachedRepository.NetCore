@@ -21,5 +21,8 @@ public void ConfigureServices(IServiceCollection services)
     // Register LazyCache - makes the IAppCache implementation
     // CachingService available to your code
     services.AddLazyCache();
+    //Add all repository classes for Dependency Injection as Scoped variables (default)
+    services.AddAllCachedRepositoriesAsServices(typeof(Application.Repositories.WorkExperienceRepo).Assembly, ServiceLifetime.Scoped);
+    
 }
 ``` 
