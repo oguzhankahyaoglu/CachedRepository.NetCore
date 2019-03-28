@@ -67,7 +67,6 @@ namespace CachedRepository.NetCore
     }
 
     public abstract class CachedRepoBase<T> : CachedRepoBase
-        where T : class
     {
         protected CachedRepoBase(IAppCache lazyCache) : base(lazyCache)
         {
@@ -94,7 +93,7 @@ namespace CachedRepository.NetCore
         /// <param name="value"></param>
         protected void SetCache(String key, T value)
         {
-            if (value == null)
+            if (value.IsDefault())
                 _LazyCache.Remove(key);
             else
             {

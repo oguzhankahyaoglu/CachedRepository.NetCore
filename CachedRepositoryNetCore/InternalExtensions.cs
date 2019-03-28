@@ -14,5 +14,10 @@ namespace CachedRepository.NetCore
             var delta = modTicks != 0 ? d.Ticks - modTicks : 0;
             return new DateTime(dt.Ticks + delta, dt.Kind);
         }
+
+        public static bool IsDefault<T>(this T parameter)
+        {
+            return parameter.Equals(default(T));
+        }
     }
 }

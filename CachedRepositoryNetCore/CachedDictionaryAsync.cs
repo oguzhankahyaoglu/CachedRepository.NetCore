@@ -36,7 +36,7 @@ namespace CachedRepository.NetCore
 
         internal override async Task<bool> IsKeyCachedAsync(Tuple<TKey1, TKey2, TKey3> key)
         {
-            var cachedEntities =await GetCachedDictionaryAsync();
+            var cachedEntities = await GetCachedDictionaryAsync();
             return cachedEntities.Any(t => t.Key.Equals(key) || (t.Key.Item1.Equals(key.Item1) && t.Key.Item2.Equals(key.Item2) && t.Key.Item3.Equals(key.Item3)));
         }
     }
@@ -80,6 +80,11 @@ namespace CachedRepository.NetCore
     //where TEntity : class
     //where TGetResult : class
     {
+        /// <summary>
+        /// If you set this flag to false, I will stop retrying to retrieve value since I will cache the default value that you have provided in abstract method.
+        /// </summary>
+        public bool ShouldTryAgainForDefaultValuesFromDataSource = true;
+
         protected CachedDictionaryAsync(IAppCache lazyCache) : base(lazyCache)
         {
         }
@@ -159,7 +164,7 @@ namespace CachedRepository.NetCore
              *Şimdi şöyle birşey var, data null döndüyse yada hata aldıysa cache'e yazmamalı okey
              * Fakat boş array/list vb döndüyse de cache'lenmeli, dönmeseymiş kardeşim yannıt dönebiliyor demek ki...                 *
              */
-            if (result == null)
+            if (result.IsDefault())
             {
                 return CreateDefaultResult(keyForFinding);
             }
@@ -213,6 +218,9 @@ namespace CachedRepository.NetCore
             var dictionary = await _GetCachedDictionaryAsync();
             if (dictionary.TryGetValue(keyForFinding, out var result))
             {
+                if (ShouldTryAgainForDefaultValuesFromDataSource && result.IsDefault())
+                    return (false, result);
+
                 if (!ShouldExpireEntityItem(keyForFinding, result))
                     return (true, result);
                 return (false, result);

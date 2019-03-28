@@ -11,8 +11,12 @@ namespace CachedRepository.NetCore
     /// </summary>
     /// <typeparam name="T">Repository'nin içerdiği entity tipi</typeparam>
     public abstract class CachedObjectAsync<T> : CachedRepoBase<T>
-        where T : class, new()
     {
+        /// <summary>
+        /// If you set this flag to false, I will stop retrying to retrieve value since I will cache the default value that you have provided in abstract method.
+        /// </summary>
+        public bool ShouldTryAgainForDefaultValuesFromDataSource = true;
+
         protected CachedObjectAsync(IAppCache lazyCache) : base(lazyCache)
         {
 
@@ -26,6 +30,8 @@ namespace CachedRepository.NetCore
                 {
                     entry.Priority = DefaultCacheItemPriority;
                     var cached = await GetDataToBeCached();
+                    if (cached.IsDefault() && ShouldTryAgainForDefaultValuesFromDataSource)
+                        return default(T);
                     LastCachedItemDate = DateTime.Now;
                     return cached;
                 }
@@ -44,7 +50,7 @@ namespace CachedRepository.NetCore
 
         public override void ReleaseCache()
         {
-            SetCache(GetCacheKey(), null);
+            SetCache(GetCacheKey(), default(T));
         }
 
         protected abstract Task<T> GetDataToBeCached();

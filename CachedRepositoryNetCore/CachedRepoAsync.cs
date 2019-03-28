@@ -12,7 +12,6 @@ namespace CachedRepository.NetCore
     /// <typeparam name="T">Repository'nin içerdiği entity tipi</typeparam>
     //public abstract class CachedRepo<T, TKey, TGetResult> : CachedRepoBase<List<T>>
     public abstract class CachedRepoAsync<T> : CachedRepoBase<T[]>
-        where T : class
         //where TGetResult : class
     {
         protected CachedRepoAsync(IAppCache lazyCache) : base(lazyCache)

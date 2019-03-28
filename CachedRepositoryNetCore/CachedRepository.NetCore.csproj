@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>2.1.0</Version>
+    <Version>2.2.0</Version>
     <Company>Oğuzhan Kahyaoğlu</Company>
     <Authors>Oğuzhan Kahyaoğlu</Authors>
     <PackageProjectUrl>https://github.com/oguzhankahyaoglu/CachedRepository.NetCore</PackageProjectUrl>
@@ -12,7 +12,7 @@
     <NeutralLanguage>en</NeutralLanguage>
     <RepositoryUrl>https://github.com/oguzhankahyaoglu/CachedRepository.NetCore</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
-    <PackageReleaseNotes>v2: Async repositories</PackageReleaseNotes>
+    <PackageReleaseNotes>v2.2: removed class/new restrictions from type arguments like repository(T)</PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>
