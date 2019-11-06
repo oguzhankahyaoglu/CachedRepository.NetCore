@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using LazyCache;
+using LazyCache.Providers;
 using Microsoft.Extensions.Caching.Memory;
 
 namespace CachedRepository.NetCore
@@ -64,6 +65,8 @@ namespace CachedRepository.NetCore
         }
 
         public abstract void ReleaseCache();
+
+        
     }
 
     public abstract class CachedRepoBase<T> : CachedRepoBase
@@ -73,9 +76,11 @@ namespace CachedRepository.NetCore
 
         }
 
+        internal static string CACHE_GUID = Guid.NewGuid().ToString();
+        
         protected virtual string GetCacheKey()
         {
-            return "CachedRepoBase-" + GetType().FullName;
+            return $"CachedRepoBase-{GetType().FullName}-{CACHE_GUID}";
         }
 
         protected async Task<T> GetFromCacheAsync(String key)
@@ -84,6 +89,14 @@ namespace CachedRepository.NetCore
             return cachedItem;
         }
 
+        /// <summary>
+        /// Clears all caches of all repositories
+        /// </summary>
+        public void ReleaseAllRepositoryCaches()
+        {
+            CACHE_GUID = Guid.NewGuid().ToString();
+        }
+        
         /// <summary>
         /// Runtime Cache'e yazmakla görevlidir. Default davranışı 15 gün cache'de kalacak ve NotRemovable olacak şekilde cache'lemektir.
         /// Davranışını değiştirmek için extend edilmelidir.

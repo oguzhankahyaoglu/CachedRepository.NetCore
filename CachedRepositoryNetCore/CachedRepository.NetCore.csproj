@@ -12,7 +12,9 @@
     <NeutralLanguage>en</NeutralLanguage>
     <RepositoryUrl>https://github.com/oguzhankahyaoglu/CachedRepository.NetCore</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
-    <PackageReleaseNotes>v2.2: removed class/new restrictions from type arguments like repository(T)</PackageReleaseNotes>
+    <PackageReleaseNotes>v2.3: Clear all cache added
+v2.2: removed class/new restrictions from type arguments like repository(T)</PackageReleaseNotes>
+    <PackageVersion>2.3.0</PackageVersion>
   </PropertyGroup>
 
   <ItemGroup>
