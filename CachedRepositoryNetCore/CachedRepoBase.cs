@@ -17,7 +17,8 @@ namespace CachedRepository.NetCore
         /// <summary>
         /// aynı günün 23:59:00 da expire olması
         /// </summary>
-        public static Func<DateTime> DefaultExpireDate1Day = () => DateTime.Now.AddMonths(1).RoundUp(TimeSpan.FromDays(1));
+        public static Func<DateTime> DefaultExpireDate1Day =
+            () => DateTime.Now.AddMonths(1).RoundUp(TimeSpan.FromDays(1));
 
         public static Func<DateTime> DefaultExpireDate5Min = () => DateTime.Now.RoundUp(TimeSpan.FromMinutes(5));
 
@@ -25,7 +26,10 @@ namespace CachedRepository.NetCore
 
         public static Func<DateTime> DefaultExpireDate1Hour = () => DateTime.Now.RoundUp(TimeSpan.FromHours(1));
 
-        public static Func<int, DateTime> DefaultExpireDateXHours = (hours) => DateTime.Now.AddHours(hours).RoundUp(TimeSpan.FromHours(1));
+        public static Func<int, DateTime> DefaultExpireDateXHours =
+            (hours) => DateTime.Now.AddHours(hours).RoundUp(TimeSpan.FromHours(1));
+
+        internal static string CACHE_GUID = Guid.NewGuid().ToString();
 
         protected CachedRepoBase(IAppCache lazyCache)
         {
@@ -33,7 +37,7 @@ namespace CachedRepository.NetCore
         }
 
         protected static readonly SemaphoreSlim locker = new SemaphoreSlim(1, 1);
-        protected IAppCache _LazyCache;
+        protected readonly IAppCache _LazyCache;
 
         protected CacheItemPriority DefaultCacheItemPriority = CacheItemPriority.Normal;
 
@@ -42,16 +46,26 @@ namespace CachedRepository.NetCore
             AbsoluteExpiration = GetCacheExpireDate(),
             //Priority = (System.Runtime.Caching.CacheItemPriority) CacheItemPriority.AboveNormal,
             Priority = DefaultCacheItemPriority,
-            PostEvictionCallbacks = {
+            PostEvictionCallbacks =
+            {
                 new PostEvictionCallbackRegistration
                 {
                     EvictionCallback = delegate(object key, object value, EvictionReason reason, object state)
                     {
-                        Debug.WriteLine($"[CachedDataSourceBase] Cache ({key}: +{value}) Removed: {reason} State: {state}");
+                        Debug.WriteLine(
+                            $"[CachedDataSourceBase] Cache ({key}: +{value}) Removed: {reason} State: {state}");
                     }
                 }
             }
         };
+
+        /// <summary>
+        /// Clears all caches of all repositories
+        /// </summary>
+        public static void ReleaseAllRepositoryCaches()
+        {
+            CACHE_GUID = Guid.NewGuid().ToString();
+        }
 
         protected virtual DateTime GetCacheExpireDate()
         {
@@ -65,19 +79,14 @@ namespace CachedRepository.NetCore
         }
 
         public abstract void ReleaseCache();
-
-        
     }
 
     public abstract class CachedRepoBase<T> : CachedRepoBase
     {
         protected CachedRepoBase(IAppCache lazyCache) : base(lazyCache)
         {
-
         }
 
-        internal static string CACHE_GUID = Guid.NewGuid().ToString();
-        
         protected virtual string GetCacheKey()
         {
             return $"CachedRepoBase-{GetType().FullName}-{CACHE_GUID}";
@@ -89,14 +98,6 @@ namespace CachedRepository.NetCore
             return cachedItem;
         }
 
-        /// <summary>
-        /// Clears all caches of all repositories
-        /// </summary>
-        public void ReleaseAllRepositoryCaches()
-        {
-            CACHE_GUID = Guid.NewGuid().ToString();
-        }
-        
         /// <summary>
         /// Runtime Cache'e yazmakla görevlidir. Default davranışı 15 gün cache'de kalacak ve NotRemovable olacak şekilde cache'lemektir.
         /// Davranışını değiştirmek için extend edilmelidir.
@@ -117,6 +118,5 @@ namespace CachedRepository.NetCore
                 //DefaultCacheItemPriority, CacheItemRemovedCallback);
             }
         }
-
     }
 }
