@@ -16,7 +16,6 @@ namespace CachedRepository.NetCore
     {
         protected CachedRepoAsync(IAppCache lazyCache) : base(lazyCache)
         {
-
         }
 
 
@@ -25,18 +24,15 @@ namespace CachedRepository.NetCore
         /// </summary>
         /// <returns></returns>
         [DebuggerStepThrough]
-        public virtual Task<T[]> GetAsync(bool dontFetchData = false)
+        public virtual Task<T[]> GetAsync()
         {
             //Bu _ ve Clone metodları LOCK'tan kurtarmak için eklendi. Datayı aldıktan sonra ,CLONE ederken LOCK'dan ötürü beklemeye gerek yok!
-            return _GetCachedEntities(dontFetchData);
+            return _GetCachedEntities();
         }
 
-        private async Task<T[]> _GetCachedEntities(bool dontFetchData)
+        private async Task<T[]> _GetCachedEntities()
         {
             var cachedEntities = await GetFromCacheAsync(GetCacheKey());
-            if (dontFetchData)
-                return cachedEntities;
-
             if (cachedEntities?.Length > 0)
                 return cachedEntities;
 

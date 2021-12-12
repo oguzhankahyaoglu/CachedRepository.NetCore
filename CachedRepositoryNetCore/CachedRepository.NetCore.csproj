@@ -1,9 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>net5.0</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>2.2.0</Version>
+    <Version>5.0.0</Version>
     <Company>Oğuzhan Kahyaoğlu</Company>
     <Authors>Oğuzhan Kahyaoğlu</Authors>
     <PackageProjectUrl>https://github.com/oguzhankahyaoglu/CachedRepository.NetCore</PackageProjectUrl>
@@ -12,24 +12,17 @@
     <NeutralLanguage>en</NeutralLanguage>
     <RepositoryUrl>https://github.com/oguzhankahyaoglu/CachedRepository.NetCore</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
-    <PackageReleaseNotes>v2.3: Clear all cache added
+    <PackageReleaseNotes>
+      v5.0: .net5 upgrade, lazycache upgraded
+      v2.3: Clear all cache added
 v2.2: removed class/new restrictions from type arguments like repository(T)</PackageReleaseNotes>
-    <PackageVersion>2.3.1</PackageVersion>
+    <PackageVersion>5.0.0</PackageVersion>
   </PropertyGroup>
 
-  <ItemGroup>
-    <Compile Remove="CachedDictionary.cs" />
-    <Compile Remove="CachedObject.cs" />
-    <Compile Remove="CachedRepo.cs" />
-  </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="LazyCache" Version="2.0.0" />
-    <PackageReference Include="LazyCache.AspNetCore" Version="2.0.0" />
+    <PackageReference Include="LazyCache" Version="2.4.0" />
+    <PackageReference Include="LazyCache.AspNetCore" Version="2.4.0" />
   </ItemGroup>
-  <!--<files>
-    <file src="bin\Debug\netstandard2.0\CachedRepository.deps.json" target="lib\netstandard2.0" />
-    <file src="bin\Debug\netstandard2.0\CachedRepository.pdb" target="lib\netstandard2.0" />
-    <file src="bin\Debug\netstandard2.0\CachedRepository.dll" target="lib\netstandard2.0" />
-  </files>-->
+
 </Project>
